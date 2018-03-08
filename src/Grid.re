@@ -1,6 +1,6 @@
 let component = ReasonReact.statelessComponent("Grid");
 
-let make = (~grid: Utils.grid, ~words: Utils.words, _children) => {
+let make = (~vGrid: Utils.grid, ~vClues: Utils.clues, _children) => {
   ...component,
   render: (_self) => {
     <div className="grid"> {
@@ -9,14 +9,19 @@ let make = (~grid: Utils.grid, ~words: Utils.words, _children) => {
           Array.concat([
             array,
             Array.mapi(
-              (colIndex, cellValue) =>
-                <Cell key={string_of_int(rowIndex) ++ "-" ++ string_of_int(colIndex)} value={cellValue} />,
+              (colIndex, cellValue) => {
+                let thisClue = vClues |> Utils.array_find((c: Utils.clue) => {
+                  let (_, vWord) = c;
+                  vWord.start.row === rowIndex && vWord.start.col === colIndex;
+                });
+                <Cell key={string_of_int(rowIndex) ++ "-" ++ string_of_int(colIndex)} value={cellValue} clue={thisClue} />
+              },
               row
             )
           ]);
         },
         [||],
-        grid
+        vGrid
       ) |> ReasonReact.arrayToElement;
     }
     </div>

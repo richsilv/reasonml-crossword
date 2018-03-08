@@ -1,6 +1,8 @@
-$grid-trim: #444;
+$grid-trim: #222;
 
 .grid {
+  font-size: 24px;
+  color: $grid-trim;
   display: inline-grid;
   border: 0.5px solid $grid-trim;
   grid-template-columns: repeat(6, max-content);

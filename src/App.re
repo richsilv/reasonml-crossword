@@ -1,4 +1,4 @@
-type state = { words: Utils.loadable(Utils.words, string), grid: option(Utils.grid) };
+type state = { clues: Utils.loadable(Utils.clues, string), grid: option(Utils.grid) };
 type action =
   | LoadStarted
   | LoadFinished(Utils.words);
@@ -7,13 +7,13 @@ let component = ReasonReact.reducerComponent("App");
 
 let make = (_children) => {
   ...component,
-  initialState: () => { words: None, grid: None },
+  initialState: () => { clues: None, grid: None },
   reducer: (action, _) =>
     switch (action) {
-    | LoadStarted => ReasonReact.Update({ words: Utils.Loading, grid: None })
+    | LoadStarted => ReasonReact.Update({ clues: Utils.Loading, grid: None })
     | LoadFinished(w) => {
       Js.log(w);
-      ReasonReact.Update({ words: Utils.Loaded(w), grid: Some(Utils.build_full_grid(w)) });
+      ReasonReact.Update({ clues: Utils.Loaded(Utils.make_clues(w)), grid: Some(Utils.build_full_grid(w)) });
     }
     },
   didMount: (self) => {
@@ -24,8 +24,8 @@ let make = (_children) => {
     ReasonReact.NoUpdate;
   },
   render: (self) => {
-    switch (self.state.words, self.state.grid) {
-      | (Loaded(w), Some(g)) => <Grid grid={g} words={w} />
+    switch (self.state.clues, self.state.grid) {
+      | (Loaded(c), Some(g)) => <Grid vGrid={g} vClues={c} />
       | (Loading, _) => <div>{ReasonReact.stringToElement("Loading...")}</div>
       | (Error(err), _) => <div>{ReasonReact.stringToElement(err)}</div>
       | _ => <div>{ReasonReact.stringToElement("Nothing to see.")}</div>

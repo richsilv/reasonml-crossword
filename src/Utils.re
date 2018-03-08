@@ -189,3 +189,18 @@ let make_clues = fun(vWords: words): clues => {
 
   vClues;
 };
+
+let rec array_find = fun(test: ('a) => bool, arr: array('a)): option('a) => {
+  let arrayLength = arr |> Array.length;
+  let thisEl = Array.get(arr, 0);
+  let rest = Array.sub(arr, 1, arrayLength - 1);
+  switch (thisEl |> test) {
+    | true => Some(thisEl)
+    | false => {
+      switch arrayLength {
+      | 1 => None
+      | _ => array_find(test, rest)
+      };
+    };
+  };
+};
