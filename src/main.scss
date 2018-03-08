@@ -1,0 +1,21 @@
+$grid-trim: #444;
+
+.grid {
+  display: inline-grid;
+  border: 0.5px solid $grid-trim;
+  grid-template-columns: repeat(6, max-content);
+  grid-template-rows: repeat(6, max-content);
+}
+
+.cell {
+  border: 0.5px solid $grid-trim;
+  width: 2em;
+  height: 2em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &.filled-in {
+    background-color: $grid-trim;
+  }
+}

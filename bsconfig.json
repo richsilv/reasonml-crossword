@@ -1,0 +1,22 @@
+{
+  "name": "crossword",
+  "bsc-flags": ["-bs-no-version-header", "-bs-super-errors"],
+  "reason": {"react-jsx" : 2},
+  "bs-dependencies": [
+    "reason-react",
+    "bs-fetch",
+    "@glennsl/bs-json"
+  ],
+  "sources": [
+    {
+      "dir": "src",
+      "subdirs": true
+    }
+  ],
+  "package-specs": {
+    "in-source": true,
+    "module": "commonjs"
+  },
+  "suffix": ".bs.js",
+  "refmt": 3
+}

@@ -1,0 +1,8 @@
+[
+  { "start": { "row": 0, "col": 1 }, "dir": "R", "hint": "", "answer": "EGGS" },
+  { "start": { "row": 2, "col": 0 }, "dir": "R", "hint": "", "answer": "CHEESE" },
+  { "start": { "row": 6, "col": 0 }, "dir": "R", "hint": "", "answer": "BROWN" },
+  { "start": { "row": 0, "col": 2 }, "dir": "D", "hint": "", "answer": "GEESE" },
+  { "start": { "row": 0, "col": 4 }, "dir": "D", "hint": "", "answer": "SUSTAIN" },
+  { "start": { "row": 2, "col": 0 }, "dir": "D", "hint": "", "answer": "CLIMB" }
+]
