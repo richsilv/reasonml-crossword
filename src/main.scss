@@ -10,6 +10,7 @@ $grid-trim: #222;
 }
 
 .cell {
+  position: relative;
   border: 0.5px solid $grid-trim;
   width: 2em;
   height: 2em;
@@ -19,5 +20,12 @@ $grid-trim: #222;
 
   &.filled-in {
     background-color: $grid-trim;
+  }
+
+  .number {
+    font-size: 0.5em;
+    position: absolute;
+    top: 0.2em;
+    left: 0.3em;
   }
 }

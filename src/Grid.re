@@ -14,7 +14,9 @@ let make = (~vGrid: Utils.grid, ~vClues: Utils.clues, _children) => {
                   let (_, vWord) = c;
                   vWord.start.row === rowIndex && vWord.start.col === colIndex;
                 });
-                <Cell key={string_of_int(rowIndex) ++ "-" ++ string_of_int(colIndex)} value={cellValue} clue={thisClue} />
+                <Cell
+                  key={string_of_int(rowIndex) ++ "-" ++ string_of_int(colIndex)}
+                  value={cellValue} vClue={thisClue} />
               },
               row
             )
