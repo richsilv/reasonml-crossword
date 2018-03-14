@@ -8,6 +8,7 @@ function shuffle(a) {
   return a;
 }
 
+// if words are in word frequency pairs
 function parseWords(filename) {
   const contents = fs.readFileSync(filename).toString();
   return contents.split('\n').map((line, rank) => {
@@ -21,14 +22,31 @@ function parseWords(filename) {
   });
 }
 
+const BAD_WORD_REGEX = /[0-9\-\.\,&]/;
+
+// just a list of words
+function loadWords(filename) {
+  const contents = fs.readFileSync(filename).toString();
+  return contents
+    .split('\n')
+    .map(word => {
+      if (BAD_WORD_REGEX.test(word)) return null;
+      return {
+        word,
+        length: word ? word.length : 0
+      };
+    })
+    .filter(word => word);
+}
+
 function makeDict(words) {
   const dict = {};
 
   words.forEach(word => {
-    if (!word.length in dict) {
+    if (!(word.length in dict)) {
       dict[word.length] = [word.word];
     } else {
-      dict[word.length].push[word.word];
+      dict[word.length].push(word.word);
     }
   });
 
@@ -146,23 +164,59 @@ function intersects(wordA, wordB) {
   );
 }
 
-const [wordShape, grid] = makeGrid(10);
-const dictionary = makeDict(parseWords('nouns.txt'));
+function fitWords(wordShape, dict) {
+  const partialSolutions = [{ fittedWords: [], reject: [] }];
+  let currentWordInd = 0;
+  let latestSolution = partialSolutions[currentWordInd];
 
-function fitWords(wordShape) {
-  const partialSolutions = [];
+  while (currentWordInd < wordShape.length) {
+    console.log(`Fit ${currentWordInd} words so far.`);
+    const thisWordShape = wordShape[currentWordInd];
+    const { fittedWords, reject } = latestSolution;
+    const constraints = calcConstraints(thisWordShape, fittedWords);
+    const nextWord = findWordWithConstraints(
+      dict,
+      thisWordShape.length,
+      constraints,
+      reject
+    );
+    if (nextWord) {
+      latestSolution = {
+        fittedWords: latestSolution.fittedWords.concat(
+          Object.assign({}, thisWordShape, { value: nextWord })
+        ),
+        reject: []
+      };
+      partialSolutions.push(latestSolution);
+      currentWordInd += 1;
+    } else {
+      const rejectWord = fittedWords.slice(-1)[0];
+      if (!rejectWord) {
+        throw new Error('No solution can be found');
+      }
+      partialSolutions.pop();
+      currentWordInd -= 1;
+      let latestSolution = partialSolutions[currentWordInd];
+      latestSolution.reject.push(rejectWord.value);
+    }
+  }
+
+  return latestSolution;
 }
 
-function findWordWithConstraints(dict, len, constraints) {
+function findWordWithConstraints(dict, len, constraints, reject) {
   const candidates = dict[len];
-  const fitsTheseConstraints = fitsConstraints.bind(null, constraints);
+  const fitsTheseConstraints = fitsConstraints.bind(null, constraints, reject);
   return candidates.find(fitsTheseConstraints);
 }
 
-function fitsConstraints(constraints, word) {
-  return constraints.every(constraint => {
-    word[constraint.letter] === constraint.value;
-  });
+function fitsConstraints(constraints, reject, word) {
+  return (
+    reject.indexOf(word) === -1 &&
+    constraints.every(constraint => {
+      word[constraint.letter] === constraint.value;
+    })
+  );
 }
 
 function calcConstraints(wordShape, fittedWords) {
@@ -184,3 +238,8 @@ function calcConstraints(wordShape, fittedWords) {
     })
     .filter(constraint => !!constraint);
 }
+
+const [wordShape, grid] = makeGrid(5);
+const dictionary = makeDict(loadWords(__dirname + '/words.txt'));
+
+console.log(fitWords(wordShape, dictionary));
