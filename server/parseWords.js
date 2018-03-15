@@ -14,7 +14,7 @@ function parseWords(filename) {
   return contents.split('\n').map((line, rank) => {
     const [_, word, count] = line.split('\t');
     return {
-      word,
+      word: word.toUpperCase(),
       count: parseInt(count, 0),
       rank,
       length: word ? word.length : 0
@@ -22,7 +22,7 @@ function parseWords(filename) {
   });
 }
 
-const BAD_WORD_REGEX = /[0-9\-\.\,&]/;
+const BAD_WORD_REGEX = /[0-9\-\.\,\'&]/;
 
 // just a list of words
 function loadWords(filename) {
@@ -32,7 +32,7 @@ function loadWords(filename) {
     .map(word => {
       if (BAD_WORD_REGEX.test(word)) return null;
       return {
-        word,
+        word: word.toUpperCase(),
         length: word ? word.length : 0
       };
     })
@@ -196,12 +196,12 @@ function fitWords(wordShape, dict) {
       }
       partialSolutions.pop();
       currentWordInd -= 1;
-      let latestSolution = partialSolutions[currentWordInd];
+      latestSolution = partialSolutions[currentWordInd];
       latestSolution.reject.push(rejectWord.value);
     }
   }
 
-  return latestSolution;
+  return latestSolution.fittedWords;
 }
 
 function findWordWithConstraints(dict, len, constraints, reject) {
@@ -213,9 +213,9 @@ function findWordWithConstraints(dict, len, constraints, reject) {
 function fitsConstraints(constraints, reject, word) {
   return (
     reject.indexOf(word) === -1 &&
-    constraints.every(constraint => {
-      word[constraint.letter] === constraint.value;
-    })
+    constraints.every(
+      constraint => word[constraint.letter] === constraint.value
+    )
   );
 }
 
@@ -239,7 +239,7 @@ function calcConstraints(wordShape, fittedWords) {
     .filter(constraint => !!constraint);
 }
 
-const [wordShape, grid] = makeGrid(5);
+const [wordShape, grid] = makeGrid(10);
 const dictionary = makeDict(loadWords(__dirname + '/words.txt'));
 
 console.log(fitWords(wordShape, dictionary));
