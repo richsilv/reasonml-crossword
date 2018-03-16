@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 
 function shuffle(a) {
   for (let i = a.length - 1; i > 0; i--) {
@@ -10,16 +11,33 @@ function shuffle(a) {
 
 // if words are in word frequency pairs
 function parseWords(filename) {
+  if (filename instanceof Array) {
+    return filename.reduce((allWords, thisFilename) => {
+      return allWords.concat(parseWords(thisFilename));
+    }, []);
+  }
   const contents = fs.readFileSync(filename).toString();
-  return contents.split('\n').map((line, rank) => {
-    const [_, word, count] = line.split('\t');
-    return {
-      word: word.toUpperCase(),
-      count: parseInt(count, 0),
-      rank,
-      length: word ? word.length : 0
-    };
-  });
+  return contents
+    .split('\n')
+    .map((line, rank) => {
+      if (!line) return null;
+      let word, count;
+      const [a, b, c] = line.split('\t');
+      if (!b) {
+        word = a;
+        count = 1;
+      } else {
+        word = b;
+        count = c;
+      }
+      return {
+        word: word.toUpperCase(),
+        count: parseInt(count, 0),
+        rank,
+        length: word ? word.length : 0
+      };
+    })
+    .filter(wordObj => !!wordObj);
 }
 
 const BAD_WORD_REGEX = /[0-9\-\.\,\'&]/;
@@ -239,7 +257,23 @@ function calcConstraints(wordShape, fittedWords) {
     .filter(constraint => !!constraint);
 }
 
-const [wordShape, grid] = makeGrid(10);
-const dictionary = makeDict(loadWords(__dirname + '/words.txt'));
+const [wordShape, grid] = makeGrid(12);
+// const dictionary = makeDict(loadWords(__dirname + '/words.txt'));
+const wordFiles = [
+  'adjectives.txt',
+  'adverbs.txt',
+  'nouns.txt',
+  'verbs.txt',
+  'countries.txt',
+  'englishCounties.txt',
+  'usStates.txt',
+  'usStateCapitals.txt',
+  'nationalCapitals.txt'
+];
+const dictionary = makeDict(
+  parseWords(
+    wordFiles.map(file => path.join(__dirname, '..', 'wordData', file))
+  )
+);
 
 console.log(fitWords(wordShape, dictionary));
