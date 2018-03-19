@@ -14,6 +14,7 @@
   "devDependencies": {
     "@glennsl/bs-json": "^1.1.2",
     "bs-fetch": "^0.2.1",
+    "bs-express": "^0.4.1",
     "bs-platform": "^2.2.2",
     "bsb-js": "^1.0.2",
     "node-sass": "^4.7.2",

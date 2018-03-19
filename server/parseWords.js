@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
+const MAX_TIMES_FITTED = 10;
+
 function shuffle(a) {
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -31,13 +33,28 @@ function parseWords(filename) {
         count = c;
       }
       return {
-        word: word.toUpperCase(),
+        ...reduceWord(word),
         count: parseInt(count, 0),
         rank,
         length: word ? word.length : 0
       };
     })
     .filter(wordObj => !!wordObj);
+}
+
+function reduceWord(word) {
+  let wordPos = 0,
+    reducedWord = '',
+    wordBreaks = [];
+  Array.from(word.toUpperCase()).forEach(letter => {
+    if (letter === '_') {
+      wordBreaks.push(wordPos);
+    } else {
+      wordPos += 1;
+      reducedWord = reducedWord + letter;
+    }
+  });
+  return { word: reducedWord, wordBreaks };
 }
 
 const BAD_WORD_REGEX = /[0-9\-\.\,\'&]/;
@@ -183,14 +200,14 @@ function intersects(wordA, wordB) {
 }
 
 function fitWords(wordShape, dict) {
-  const partialSolutions = [{ fittedWords: [], reject: [] }];
+  const partialSolutions = [{ fittedWords: [], reject: [], timesFitted: 0 }];
   let currentWordInd = 0;
   let latestSolution = partialSolutions[currentWordInd];
 
   while (currentWordInd < wordShape.length) {
     console.log(`Fit ${currentWordInd} words so far.`);
     const thisWordShape = wordShape[currentWordInd];
-    const { fittedWords, reject } = latestSolution;
+    const { fittedWords, reject, timesFitted } = latestSolution;
     const constraints = calcConstraints(thisWordShape, fittedWords);
     const nextWord = findWordWithConstraints(
       dict,
@@ -198,16 +215,20 @@ function fitWords(wordShape, dict) {
       constraints,
       reject
     );
-    if (nextWord) {
+    if (nextWord && timesFitted < MAX_TIMES_FITTED) {
+      latestSolution.timesFitted += 1;
       latestSolution = {
         fittedWords: latestSolution.fittedWords.concat(
           Object.assign({}, thisWordShape, { value: nextWord })
         ),
-        reject: []
+        reject: [],
+        timesFitted: 0
       };
       partialSolutions.push(latestSolution);
       currentWordInd += 1;
     } else {
+      if (timesFitted >= MAX_TIMES_FITTED)
+        console.log(`Rejecting due to failure after ${timesFitted} failures.`);
       const rejectWord = fittedWords.slice(-1)[0];
       if (!rejectWord) {
         throw new Error('No solution can be found');

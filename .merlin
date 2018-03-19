@@ -11,6 +11,10 @@ S /home/richard/Personal/crossword/node_modules/bs-fetch/lib/ocaml
 B /home/richard/Personal/crossword/node_modules/bs-fetch/lib/ocaml
 S /home/richard/Personal/crossword/node_modules/@glennsl/bs-json/lib/ocaml
 B /home/richard/Personal/crossword/node_modules/@glennsl/bs-json/lib/ocaml
+S /home/richard/Personal/crossword/node_modules/bs-express/lib/ocaml
+B /home/richard/Personal/crossword/node_modules/bs-express/lib/ocaml
 S src
 B lib/bs/src
+S src/server
+B lib/bs/src/server
 ####BSB GENERATED: NO EDIT}
