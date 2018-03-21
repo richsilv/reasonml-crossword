@@ -158,12 +158,12 @@ function checkWord(word, words) {
       const buttingUp =
         ((thisWord.start - 1 === word.crossIndex ||
           thisWord.start + thisWord.length === word.crossIndex) &&
-          (thisWord.crossIndex >= word.start) &
-            (thisWord.crossIndex <= word.start + word.length - 1)) ||
+          thisWord.crossIndex >= word.start &&
+          thisWord.crossIndex <= word.start + word.length - 1) ||
         ((word.start - 1 === thisWord.crossIndex ||
           word.start + word.length === thisWord.crossIndex) &&
-          (word.crossIndex >= thisWord.start) &
-            (word.crossIndex <= thisWord.start + thisWord.length - 1));
+          word.crossIndex >= thisWord.start &&
+          word.crossIndex <= thisWord.start + thisWord.length - 1);
       // if (buttingUp) console.log('Fails butting up check');
       return buttingUp;
     }
