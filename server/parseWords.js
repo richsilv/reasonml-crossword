@@ -268,7 +268,7 @@ function calcConstraints(wordShape, fittedWords) {
       ) {
         return undefined;
       }
-      const value = 
+      const value = fittedWord.value[wordShape.crossIndex - fittedWord.start];
       if (!value) return undefined;
       return {
         letter: fittedWord.crossIndex - wordShape.start,
