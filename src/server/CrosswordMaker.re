@@ -113,17 +113,35 @@ type letterConstraint = {
   value: char
 };
 
-let calcConstraints = (wordShape: partialWord, fittedWords: list(completedWord)): list(letterConstraint) => {
-  fittedWords |> List.fold_left((letterConstraints, fittedWord): list(letterConstraint) => {
-    fittedWord.dir === wordShape.dir ||
-    fittedWord.crossIndex < wordShape.start ||
-    fittedWord.crossIndex > wordShape.start + wordShape.length - 1 ||
-    wordShape.crossIndex - fittedWord.start < 0 ||
-    wordShape.crossIndex - fittedWord.start >= String.length(fittedWord.value)
-      ? letterConstraints
-      : {
-        let value = wordShape.crossIndex - fittedWord.start |> String.get(fittedWord.value);
-        [{ letter: fittedWord.crossIndex - wordShape.start, value: value }, ...letterConstraints];
-      }
-  }, []);
-};
+let calcConstraints =
+    (wordShape: partialWord, fittedWords: list(completedWord))
+    : list(letterConstraint) =>
+  fittedWords
+  |> List.fold_left(
+       fun (letterConstraints, fittedWord) => (
+         fittedWord.dir === wordShape.dir
+         || fittedWord.crossIndex < wordShape.start
+         || fittedWord.crossIndex > wordShape.start
+         + wordShape.length
+         - 1
+         || wordShape.crossIndex
+         - fittedWord.start < 0
+         || wordShape.crossIndex
+         - fittedWord.start >= String.length(fittedWord.value) ?
+           letterConstraints :
+           {
+             let value = wordShape.crossIndex - fittedWord.start |> String.get(fittedWord.value);
+             [{letter: fittedWord.crossIndex - wordShape.start, value}, ...letterConstraints]
+           }:
+           list(letterConstraint)
+       ),
+       []
+     );
+
+let fitsConstraints = (_constraints: list(letterConstraint), reject: list(string), word: string) =>
+  ! List.exists((rejectWord) => rejectWord === word, reject)
+  && ! List.exists((_constraint) => word.[_constraint.letter] !== _constraint.value, _constraints);
+
+type wordDict =
+
+let findWordWithConstraints = () => {};
